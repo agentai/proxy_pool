@@ -32,8 +32,8 @@ class ProxyFetcher(object):
         """
         url_list = [
             'http://www.data5u.com/',
-            'http://www.data5u.com/free/gngn/index.shtml',
-            'http://www.data5u.com/free/gnpt/index.shtml'
+            # 'http://www.data5u.com/free/gngn/index.shtml',
+            # 'http://www.data5u.com/free/gnpt/index.shtml'
         ]
         key = 'ABCDEFGHIZ'
         for url in url_list:
@@ -122,7 +122,7 @@ class ProxyFetcher(object):
                 pass
 
     @staticmethod
-    def freeProxy05(page_count=1):
+    def freeProxy05(page_count=10):
         """
         快代理 https://www.kuaidaili.com
         """
@@ -159,14 +159,21 @@ class ProxyFetcher(object):
                     yield proxy
 
     @staticmethod
-    def freeProxy07():
+    def freeProxy07(page_count=7):
         """
         云代理 http://www.ip3366.net/free/
         :return:
         """
-        urls = ['http://www.ip3366.net/free/?stype=1',
-                "http://www.ip3366.net/free/?stype=2"]
-        for url in urls:
+        url_pattern = [
+            'http://www.ip3366.net/free/?stype=1&page={}',
+            "http://www.ip3366.net/free/?stype=2&page={}"
+        ]
+        url_list = []
+        for page_index in range(1, page_count + 1):
+            for pattern in url_pattern:
+                url_list.append(pattern.format(page_index))
+
+        for url in url_list:
             r = WebRequest().get(url, timeout=10)
             proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
             for proxy in proxies:
@@ -192,14 +199,26 @@ class ProxyFetcher(object):
                 yield ":".join(proxy)
 
     @staticmethod
-    def freeProxy09(page_count=1):
+    def freeProxy09(page_count=4):
         """
         http://ip.jiangxianli.com/?page=
         免费代理库
         :return:
         """
-        for i in range(1, page_count + 1):
-            url = 'http://ip.jiangxianli.com/?country=中国&page={}'.format(i)
+        url_pattern = [
+            "http://ip.jiangxianli.com/?anonymity=1&page={}",
+            "http://ip.jiangxianli.com/?anonymity=2&page={}",
+            "http://ip.jiangxianli.com/?protocol=http&page={}",
+            "http://ip.jiangxianli.com/?protocol=https&page={}",
+        ]
+        url_list = []
+        for page_index in range(1, page_count + 1):
+            for pattern in url_pattern:
+                url_list.append(pattern.format(page_index))
+
+        for url in url_list:
+        # for i in range(1, page_count + 1):
+        #     url = 'http://ip.jiangxianli.com/?anonymity=2&page={}'.format(i)
             html_tree = WebRequest().get(url).tree
             for index, tr in enumerate(html_tree.xpath("//table//tr")):
                 if index == 0:
@@ -246,7 +265,7 @@ class ProxyFetcher(object):
     #             yield ':'.join(proxy)
 
     @staticmethod
-    def freeProxy13(max_page=2):
+    def freeProxy13(max_page=50):
         """
         http://www.89ip.cn/index.html
         89免费代理
@@ -264,17 +283,24 @@ class ProxyFetcher(object):
                 yield ':'.join(proxy)
 
     @staticmethod
-    def freeProxy14():
+    def freeProxy14(page_count=50):
         """
         http://www.xiladaili.com/
         西拉代理
         :return:
         """
-        urls = ['http://www.xiladaili.com/putong/',
-                "http://www.xiladaili.com/gaoni/",
-                "http://www.xiladaili.com/http/",
-                "http://www.xiladaili.com/https/"]
-        for url in urls:
+        url_pattern = [
+            "http://www.xiladaili.com/putong/{}/",
+            "http://www.xiladaili.com/gaoni/{}/",
+            "http://www.xiladaili.com/http/{}/",
+            "http://www.xiladaili.com/https/{}/",
+        ]
+        url_list = []
+        for page_index in range(1, page_count + 1):
+            for pattern in url_pattern:
+                url_list.append(pattern.format(page_index))
+
+        for url in url_list:
             r = WebRequest().get(url, timeout=10)
             ips = re.findall(r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}", r.text)
             for ip in ips:
